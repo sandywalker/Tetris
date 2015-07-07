@@ -1,0 +1,56 @@
+html,body{
+	height:100%;
+}
+
+body{
+	background: #3f3f3f;
+	margin:0;
+	padding:0;
+	position: relative;
+	font-family: 'American Typewriter','Marker Felt';
+}
+
+#tetris{
+	left:50%;
+	top:50%;
+	position: absolute;
+	background: #555;
+	
+}
+
+#scene{
+	height:100%;
+	position: absolute;
+	background: #2f2f2f;
+}
+
+#side{
+	height:100%;
+	position: absolute;
+	top:0;
+	right:0;
+	text-align: center;
+}
+
+#info{
+	width:120px;
+	margin:0 auto;
+}
+
+#preview{
+	width:80px;
+	height:80px;
+	background: #2f2f2f;
+	margin:10px auto;
+}
+
+#levelInfo{
+	color:#fff;
+	font-size:18px;
+	margin:10px 0;
+}
+#scoreInfo{
+	color:orange;
+	font-size: 16px;
+	margin-top:0;
+}

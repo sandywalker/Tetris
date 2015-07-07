@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Tetris</title>
+
+	<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="tetris">
+	<canvas id="scene"></canvas>
+	<div id="side">
+		<div id="info">
+			<h1 id="levelInfo">Level: <span id="level">1</span></h1>
+			<h2 id="scoreInfo">Score: <span id="score">0</span></h2>
+			<canvas id="preview"></canvas>
+		</div>
+	</div>
+</div>
+
+</body>
+<script src="dist/tetris.js"></script>
+<script>
+	(function(){
+		//document.activeElement(document.getElementById('scene'));
+		var tetris = new Tetris('tetris');
+		tetris.start();
+
+		
+
+	//  var canvas = document.getElementById('scene');
+	//  canvas.width= 300;
+	//  canvas.height = 600;
+
+	//  var context = canvas.getContext('2d');
+
+	//  var gridSize = 30;
+
+	//   function drawbg(ctx){
+	//   ctx.rect(0, 0, canvas.width, canvas.height);
+ //      // add linear gradient
+ //      var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
+ //      // light blue
+ //      grd.addColorStop(0, '#a5aeb6');   
+ //      // dark blue
+ //      grd.addColorStop(1, '#b8ced7');
+ //      ctx.fillStyle = grd;
+ //      ctx.fill();
+	//   for (var i = 1; i < 10; i++) {
+	// 		ctx.beginPath();	
+	// 		ctx.moveTo(gridSize*i+0.5,0);
+	// 		ctx.lineTo(gridSize*i+0.5,canvas.height);
+			
+	// 		ctx.lineWidth=1;
+	// 		ctx.strokeStyle= 'rgba(255,255,255,0.2)';
+			
+	// 		ctx.stroke();
+	// 		ctx.closePath();
+	//   };
+	//   for (var i = 1; i < 20; i++) {
+	// 		ctx.beginPath();
+	// 		ctx.moveTo(0,gridSize*i+0.5);
+	// 		ctx.lineTo(canvas.width,gridSize*i+0.5);
+	// 		ctx.lineWidth=1;
+	// 		ctx.strokeStyle= 'rgba(255,255,255,0.2)';
+	// 		ctx.stroke();
+	// 		ctx.closePath();
+	//   };
+
+
+	  
+
+
+	// }
+	
+	// drawbg(context);	
+	})();
+</script>
+</html>
