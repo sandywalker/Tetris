@@ -49,12 +49,12 @@ var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 };
 
 var drawBox = function(ctx,color,x,y,gridSize){
-
 			if (y<0){
 				return;
 			}
+
 			ctx.beginPath();
-			ctx.rect(x*gridSize,y*gridSize,gridSize,gridSize);
+			ctx.rect(x,y,gridSize,gridSize);
 			ctx.fillStyle = color;
 			ctx.fill();
 			ctx.strokeStyle= boxBorderColor;
@@ -76,13 +76,15 @@ var tetrisCanvas = {
 		this.previewGridSize = preview.width / consts.PREVIEW_COUNT;
 
 		this.drawScene();
-		this.drawPreview();
+		
 	},
 
 	clearScene:function(){
 		this.sceneContext.clearRect(0, 0, this.scene.width, this.scene.height);
 	},
-
+	clearPreview:function(){
+		this.previewContext.clearRect(0,0,this.preview.width,this.preview.height);
+	},
 	drawScene:function(){
 		this.clearScene();
 		drawGrids(this.scene,this.gridSize,
@@ -94,7 +96,7 @@ var tetrisCanvas = {
 			var row = matrix[i];
 			for(var j = 0;j<row.length;j++){
 				if (row[j]!==0){
-					drawBox(this.sceneContext,row[j],j,i,this.gridSize);
+					drawBox(this.sceneContext,row[j],j*this.gridSize,i*this.gridSize,this.gridSize);
 				}
 			}
 		}	
@@ -109,11 +111,34 @@ var tetrisCanvas = {
 			return;
 		}
 		var matrix = shape.matrix();
+		var gsize = this.gridSize;
 		for(var i = 0;i<matrix.length;i++){
 			for(var j = 0;j<matrix[i].length;j++){
 				var value = matrix[i][j];
 				if (value === 1){
-					drawBox(this.sceneContext,shape.color,shape.x+j,shape.y+i,this.gridSize);
+					var x = gsize *(shape.x + j);
+					var y = gsize *(shape.y + i);
+					drawBox(this.sceneContext,shape.color,x,y,gsize);
+				}
+			}
+		}
+	},
+	drawPreviewShape:function(shape){
+		if (!shape){
+			return;
+		}
+		this.clearPreview();
+		var matrix = shape.matrix();
+		var gsize = this.previewGridSize;
+		var startX = (this.preview.width - gsize*shape.getColumnCount()) / 2;
+		var startY = (this.preview.height - gsize*shape.getRowCount()) / 2;
+		for(var i = 0;i<matrix.length;i++){
+			for(var j = 0;j<matrix[i].length;j++){
+				var value = matrix[i][j];
+				if (value === 1){
+					var x = startX + gsize * j;
+					var y = startY + gsize * i;
+					drawBox(this.previewContext,shape.color,x,y,gsize);
 				}
 			}
 		}
@@ -142,9 +167,9 @@ var rowCount = 20;
 //previewCount
 var previewCount = 6;
 
-var sceneBgStart = '#a5aeb6';
+var sceneBgStart = '#8e9ba6';
 
-var sceneBgEnd = '#b8ced7';
+var sceneBgEnd = '#5c6975';
 
 var previewBg = '#2f2f2f';
 
@@ -254,6 +279,23 @@ var removeRows = function(matrix,rows){
 	}
 }
 
+/**
+
+*/
+var calcRewards = function(rows){
+	if (rows&&rows.length>1){
+		return Math.pow(2,rows.length - 1)*100;	
+	}
+	return 0;
+}
+
+var calcScore = function(rows){
+	if (rows&&rows.length){
+		return rows.length*100;
+	}
+	return 0;
+}
+
 
 var defaults = {
 	maxHeight:700,
@@ -275,6 +317,8 @@ Tetris.prototype = {
 		this.interval = consts.DEFAULT_INTERVAL;
 		this.running = false;
 		this.gameover = false;
+		this.level = 1;
+		this.score = 0;
 
 		
 		
@@ -285,39 +329,9 @@ Tetris.prototype = {
 		this.matrix = initMatrix(consts.ROW_COUNT,consts.COLUMN_COUNT);
 
 		this._initEvents();
-		this.shape = shapes.randomShape();
+		this._fireShape();
 
-	},
-	_keydownHandler:function(e){
-		
-		var matrix = this.matrix;
 
-		if(!e) { 
-			var e = window.event; 
-		}
-		if (!this.shape){
-			return;
-		}
-
-		switch(e.keyCode){
-			case 37:{this.shape.goLeft(matrix);}
-			break;
-			
-			case 39:{this.shape.goRight(matrix);}
-			break;
-			
-			case 38:{this.shape.rotate(matrix);}
-			break;
-
-			case 40:{this.shape.goDown(matrix);}
-			break;
-
-			case 32:{this.shape.goBottom(matrix);this._refresh();}
-			break;
-		}
-	},
-	_initEvents:function(){
-		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
 	},
 	reset:function(){
 		this.startTime = new Date().getTime();
@@ -326,45 +340,90 @@ Tetris.prototype = {
 	},
 	start:function(){
 		this.running = true;
-		window.requestAnimationFrame(utils.proxy(this._update,this));
+		window.requestAnimationFrame(utils.proxy(this._refresh,this));
 	},
 	pause:function(){
 		this.running = false;
 		this.currentTime = new Date().getTime();
 		this.prevTime = this.currentTime;
 	},
+	_keydownHandler:function(e){
+		
+		var matrix = this.matrix;
+
+		if(!e) { 
+			var e = window.event;
+		}
+		if (!this.shape){
+			return;
+		}
+
+		switch(e.keyCode){
+			case 37:{this.shape.goLeft(matrix);this._draw();}
+			break;
+			
+			case 39:{this.shape.goRight(matrix);this._draw();}
+			break;
+			
+			case 38:{this.shape.rotate(matrix);this._draw();}
+			break;
+
+			case 40:{this.shape.goDown(matrix);this._draw();}
+			break;
+
+			case 32:{this.shape.goBottom(matrix);this._update();}
+			break;
+		}
+	},
+	_initEvents:function(){
+		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
+	},
+
+	_fireShape:function(){
+		this.shape = this.preparedShape||shapes.randomShape();
+		this.preparedShape = shapes.randomShape();
+		this._draw();
+		canvas.drawPreviewShape(this.preparedShape);
+	},
+	
 	_draw:function(){
 		canvas.drawScene(); 
 		canvas.drawShape(this.shape);
 		canvas.drawMatrix(this.matrix);
 	},
-	_update:function(){
+	_refresh:function(){
 		if (!this.running){
 			return;
 		}
 		this.currentTime = new Date().getTime();
 		if (this.currentTime - this.prevTime > this.interval ){
-			this._refresh();
+			this._update();
 			this.prevTime = this.currentTime;
 		}
-		this._draw();
-		window.requestAnimationFrame(utils.proxy(this._update,this));
+		window.requestAnimationFrame(utils.proxy(this._refresh,this));
 	},
-	_refresh:function(){
+	_update:function(){
 		if (this.shape.canDown(this.matrix)){
 			this.shape.goDown(this.matrix);
 		}else{
 			this.shape.copyTo(this.matrix);
 			this._check();
-			this.shape = shapes.randomShape();
-			this._draw();
+			this._fireShape();
 		}
+		this._draw();
 	},
 
 	_check:function(){
 		var rows = checkFullRows(this.matrix);
 		if (rows.length){
 			removeRows(this.matrix,rows);
+			
+			var score = calcScore(rows);
+			var reward = calcRewards(rows);
+			this.score += score + reward;
+
+			views.setScore(this.score);
+			views.setReward(reward);
 		}
 	}
 }
@@ -590,13 +649,24 @@ ShapeZR.prototype = {
 		if (isShapeCanMove(this,matrix,'rotate')){
 			this.state = this.nextState();
 			//fix position if shape is out of right border
-			var right = this._getRight();
+			var right = this.getRight();
 			if ( right >= COLUMN_COUNT){
 				this.x -= right - COLUMN_COUNT + 1;
 			}
 		}
 	},
-	_getRight:function(){
+	getColumnCount:function(){
+		var mtx = this.matrix();
+		var colCount = 0;
+		for(var i=0;i<mtx.length;i++){
+			colCount = Math.max(colCount,mtx[i].length);
+		}
+		return colCount;
+	},
+	getRowCount:function(){
+		return this.matrix().length;
+	},
+	getRight:function(){
 		var boxes = this.getBoxes(this.state);
 		var right = 0;
 
@@ -663,6 +733,7 @@ function randomShape()
 		case 5: shape = new ShapeZR();			break;
 		case 6: shape = new ShapeI();			break;
 	}
+	shape = new ShapeI();
 	shape.init();
 	return shape;
 }
@@ -792,6 +863,9 @@ var info = $('info');
 var preview = $('preview');
 var level = $('level');
 var score = $('score');
+var rewardInfo = $('rewardInfo');
+var reward = $('reward');
+
 
 //defaults
 var SIDE_WIDTH = consts.SIDE_WIDTH;
@@ -847,13 +921,25 @@ var tetrisView = {
 	  this.preview = preview;
 	  layoutView(this.container,maxW,maxH);
 	  this.scene.focus();
+
+	  rewardInfo.addEventListener('animationEnd',function(e){
+		 rewardInfo.className = 'invisible';
+	  });
 	},
 
-	setScore:function(score){
-		
+	setScore:function(scoreNumber){
+		score.innerHTML = scoreNumber;	
 	},
 	setLevel:function(level){
 
+	},
+	setReward:function(rewardScore){
+		if (rewardScore>0){
+			reward.innerHTML = rewardScore;
+			rewardInfo.className = 'fadeOutUp animated';	
+		}else{
+			rewardInfo.className = 'invisible';
+		}
 	}
 };
 

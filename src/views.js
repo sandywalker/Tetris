@@ -10,6 +10,9 @@ var info = $('info');
 var preview = $('preview');
 var level = $('level');
 var score = $('score');
+var rewardInfo = $('rewardInfo');
+var reward = $('reward');
+
 
 //defaults
 var SIDE_WIDTH = consts.SIDE_WIDTH;
@@ -65,13 +68,25 @@ var tetrisView = {
 	  this.preview = preview;
 	  layoutView(this.container,maxW,maxH);
 	  this.scene.focus();
+
+	  rewardInfo.addEventListener('animationEnd',function(e){
+		 rewardInfo.className = 'invisible';
+	  });
 	},
 
-	setScore:function(score){
-		
+	setScore:function(scoreNumber){
+		score.innerHTML = scoreNumber;	
 	},
 	setLevel:function(level){
 
+	},
+	setReward:function(rewardScore){
+		if (rewardScore>0){
+			reward.innerHTML = rewardScore;
+			rewardInfo.className = 'fadeOutUp animated';	
+		}else{
+			rewardInfo.className = 'invisible';
+		}
 	}
 };
 

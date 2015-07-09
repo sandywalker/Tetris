@@ -49,8 +49,66 @@ body{
 	font-size:18px;
 	margin:10px 0;
 }
-#scoreInfo{
+#level{
 	color:orange;
-	font-size: 16px;
+	font-size:32px;
+}
+
+#scoreInfo{
+	color:#fff;
+	font-size: 18px;
 	margin-top:0;
+}
+
+#score{
+	color:orange;
+	font-family: 'Chalkboard SE';
+}
+
+#rewardInfo{
+	color:yellow;
+	font-weight: bold;
+	height:20px;
+}
+
+.invisible{
+	visibility: hidden;
+}
+
+.animated {
+  -webkit-animation-duration: 1.5s;
+  animation-duration: 1.5s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+
+@-webkit-keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    -ms-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+.fadeOutUp {
+  -webkit-animation-name: fadeOutUp;
+  animation-name: fadeOutUp;
 }

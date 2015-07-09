@@ -15,9 +15,9 @@ var rowCount = 20;
 //previewCount
 var previewCount = 6;
 
-var sceneBgStart = '#a5aeb6';
+var sceneBgStart = '#8e9ba6';
 
-var sceneBgEnd = '#b8ced7';
+var sceneBgEnd = '#5c6975';
 
 var previewBg = '#2f2f2f';
 
@@ -27,6 +27,8 @@ var boxBorderColor = 'rgba(255,255,255,0.5)';
 
 
 var defaultInterval = 600;
+
+var levelInterval = 20 * 1000; 
 
 
 
@@ -54,3 +56,5 @@ exports.GRID_LINE_COLOR = gridLineColor;
 exports.BOX_BORDER_COLOR = boxBorderColor;
 
 exports.DEFAULT_INTERVAL = defaultInterval;
+
+exports.LEVEL_INTERVAL = levelInterval;

@@ -210,13 +210,24 @@ ShapeZR.prototype = {
 		if (isShapeCanMove(this,matrix,'rotate')){
 			this.state = this.nextState();
 			//fix position if shape is out of right border
-			var right = this._getRight();
+			var right = this.getRight();
 			if ( right >= COLUMN_COUNT){
 				this.x -= right - COLUMN_COUNT + 1;
 			}
 		}
 	},
-	_getRight:function(){
+	getColumnCount:function(){
+		var mtx = this.matrix();
+		var colCount = 0;
+		for(var i=0;i<mtx.length;i++){
+			colCount = Math.max(colCount,mtx[i].length);
+		}
+		return colCount;
+	},
+	getRowCount:function(){
+		return this.matrix().length;
+	},
+	getRight:function(){
 		var boxes = this.getBoxes(this.state);
 		var right = 0;
 
@@ -283,6 +294,7 @@ function randomShape()
 		case 5: shape = new ShapeZR();			break;
 		case 6: shape = new ShapeI();			break;
 	}
+	shape = new ShapeI();
 	shape.init();
 	return shape;
 }

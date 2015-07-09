@@ -48,12 +48,12 @@ var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 };
 
 var drawBox = function(ctx,color,x,y,gridSize){
-
 			if (y<0){
 				return;
 			}
+
 			ctx.beginPath();
-			ctx.rect(x*gridSize,y*gridSize,gridSize,gridSize);
+			ctx.rect(x,y,gridSize,gridSize);
 			ctx.fillStyle = color;
 			ctx.fill();
 			ctx.strokeStyle= boxBorderColor;
@@ -75,13 +75,15 @@ var tetrisCanvas = {
 		this.previewGridSize = preview.width / consts.PREVIEW_COUNT;
 
 		this.drawScene();
-		this.drawPreview();
+		
 	},
 
 	clearScene:function(){
 		this.sceneContext.clearRect(0, 0, this.scene.width, this.scene.height);
 	},
-
+	clearPreview:function(){
+		this.previewContext.clearRect(0,0,this.preview.width,this.preview.height);
+	},
 	drawScene:function(){
 		this.clearScene();
 		drawGrids(this.scene,this.gridSize,
@@ -93,7 +95,7 @@ var tetrisCanvas = {
 			var row = matrix[i];
 			for(var j = 0;j<row.length;j++){
 				if (row[j]!==0){
-					drawBox(this.sceneContext,row[j],j,i,this.gridSize);
+					drawBox(this.sceneContext,row[j],j*this.gridSize,i*this.gridSize,this.gridSize);
 				}
 			}
 		}	
@@ -108,11 +110,34 @@ var tetrisCanvas = {
 			return;
 		}
 		var matrix = shape.matrix();
+		var gsize = this.gridSize;
 		for(var i = 0;i<matrix.length;i++){
 			for(var j = 0;j<matrix[i].length;j++){
 				var value = matrix[i][j];
 				if (value === 1){
-					drawBox(this.sceneContext,shape.color,shape.x+j,shape.y+i,this.gridSize);
+					var x = gsize *(shape.x + j);
+					var y = gsize *(shape.y + i);
+					drawBox(this.sceneContext,shape.color,x,y,gsize);
+				}
+			}
+		}
+	},
+	drawPreviewShape:function(shape){
+		if (!shape){
+			return;
+		}
+		this.clearPreview();
+		var matrix = shape.matrix();
+		var gsize = this.previewGridSize;
+		var startX = (this.preview.width - gsize*shape.getColumnCount()) / 2;
+		var startY = (this.preview.height - gsize*shape.getRowCount()) / 2;
+		for(var i = 0;i<matrix.length;i++){
+			for(var j = 0;j<matrix[i].length;j++){
+				var value = matrix[i][j];
+				if (value === 1){
+					var x = startX + gsize * j;
+					var y = startY + gsize * i;
+					drawBox(this.previewContext,shape.color,x,y,gsize);
 				}
 			}
 		}

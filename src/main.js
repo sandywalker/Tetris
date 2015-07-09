@@ -69,6 +69,23 @@ var removeRows = function(matrix,rows){
 	}
 }
 
+/**
+
+*/
+var calcRewards = function(rows){
+	if (rows&&rows.length>1){
+		return Math.pow(2,rows.length - 1)*100;	
+	}
+	return 0;
+}
+
+var calcScore = function(rows){
+	if (rows&&rows.length){
+		return rows.length*100;
+	}
+	return 0;
+}
+
 
 var defaults = {
 	maxHeight:700,
@@ -90,6 +107,8 @@ Tetris.prototype = {
 		this.interval = consts.DEFAULT_INTERVAL;
 		this.running = false;
 		this.gameover = false;
+		this.level = 1;
+		this.score = 0;
 
 		
 		
@@ -100,39 +119,9 @@ Tetris.prototype = {
 		this.matrix = initMatrix(consts.ROW_COUNT,consts.COLUMN_COUNT);
 
 		this._initEvents();
-		this.shape = shapes.randomShape();
+		this._fireShape();
 
-	},
-	_keydownHandler:function(e){
-		
-		var matrix = this.matrix;
 
-		if(!e) { 
-			var e = window.event; 
-		}
-		if (!this.shape){
-			return;
-		}
-
-		switch(e.keyCode){
-			case 37:{this.shape.goLeft(matrix);}
-			break;
-			
-			case 39:{this.shape.goRight(matrix);}
-			break;
-			
-			case 38:{this.shape.rotate(matrix);}
-			break;
-
-			case 40:{this.shape.goDown(matrix);}
-			break;
-
-			case 32:{this.shape.goBottom(matrix);this._refresh();}
-			break;
-		}
-	},
-	_initEvents:function(){
-		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
 	},
 	reset:function(){
 		this.startTime = new Date().getTime();
@@ -141,45 +130,90 @@ Tetris.prototype = {
 	},
 	start:function(){
 		this.running = true;
-		window.requestAnimationFrame(utils.proxy(this._update,this));
+		window.requestAnimationFrame(utils.proxy(this._refresh,this));
 	},
 	pause:function(){
 		this.running = false;
 		this.currentTime = new Date().getTime();
 		this.prevTime = this.currentTime;
 	},
+	_keydownHandler:function(e){
+		
+		var matrix = this.matrix;
+
+		if(!e) { 
+			var e = window.event;
+		}
+		if (!this.shape){
+			return;
+		}
+
+		switch(e.keyCode){
+			case 37:{this.shape.goLeft(matrix);this._draw();}
+			break;
+			
+			case 39:{this.shape.goRight(matrix);this._draw();}
+			break;
+			
+			case 38:{this.shape.rotate(matrix);this._draw();}
+			break;
+
+			case 40:{this.shape.goDown(matrix);this._draw();}
+			break;
+
+			case 32:{this.shape.goBottom(matrix);this._update();}
+			break;
+		}
+	},
+	_initEvents:function(){
+		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
+	},
+
+	_fireShape:function(){
+		this.shape = this.preparedShape||shapes.randomShape();
+		this.preparedShape = shapes.randomShape();
+		this._draw();
+		canvas.drawPreviewShape(this.preparedShape);
+	},
+	
 	_draw:function(){
 		canvas.drawScene(); 
 		canvas.drawShape(this.shape);
 		canvas.drawMatrix(this.matrix);
 	},
-	_update:function(){
+	_refresh:function(){
 		if (!this.running){
 			return;
 		}
 		this.currentTime = new Date().getTime();
 		if (this.currentTime - this.prevTime > this.interval ){
-			this._refresh();
+			this._update();
 			this.prevTime = this.currentTime;
 		}
-		this._draw();
-		window.requestAnimationFrame(utils.proxy(this._update,this));
+		window.requestAnimationFrame(utils.proxy(this._refresh,this));
 	},
-	_refresh:function(){
+	_update:function(){
 		if (this.shape.canDown(this.matrix)){
 			this.shape.goDown(this.matrix);
 		}else{
 			this.shape.copyTo(this.matrix);
 			this._check();
-			this.shape = shapes.randomShape();
-			this._draw();
+			this._fireShape();
 		}
+		this._draw();
 	},
 
 	_check:function(){
 		var rows = checkFullRows(this.matrix);
 		if (rows.length){
 			removeRows(this.matrix,rows);
+			
+			var score = calcScore(rows);
+			var reward = calcRewards(rows);
+			this.score += score + reward;
+
+			views.setScore(this.score);
+			views.setReward(reward);
 		}
 	}
 }
