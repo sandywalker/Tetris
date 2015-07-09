@@ -178,8 +178,11 @@ var gridLineColor = 'rgba(255,255,255,0.2)';
 var boxBorderColor = 'rgba(255,255,255,0.5)';
 
 
+// Game speed
 var defaultInterval = 600;
 
+
+// Level update interval 
 var levelInterval = 120 * 1000; 
 
 
