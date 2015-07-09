@@ -23,6 +23,17 @@ var initMatrix = function(rowCount,columnCount){
 	return result;
 };
 
+/**
+  Clear game matrix
+*/
+var clearMatrix = function(matrix){
+	for(var i = 0;i<matrix.length;i++){
+		for(var j = 0;j<matrix[i].length;j++){
+			matrix[i][j] = 0;
+		}
+	}
+};
+
 
 /**
 	Check all full rows in game matrix
@@ -59,7 +70,7 @@ var removeOneRow = function(matrix,row){
 			}	
 		}
 	}	
-}
+};
 /**
 	Remove rows from game matrix by row numbers.
 */
@@ -67,34 +78,45 @@ var removeRows = function(matrix,rows){
 	for(var i in rows){
 		removeOneRow(matrix,rows[i]);
 	}
-}
+};
+
+var checkGameOver = function(matrix){
+	var firstRow = matrix[0];
+	for(var i = 0;i<firstRow.length;i++){
+		if (firstRow[i]!==0){
+			return true;
+		};
+	}
+	return false;
+};
+
 
 /**
-
+	Calculate  the extra rewards add to the score
 */
 var calcRewards = function(rows){
 	if (rows&&rows.length>1){
 		return Math.pow(2,rows.length - 1)*100;	
 	}
 	return 0;
-}
+};
 
 var calcScore = function(rows){
 	if (rows&&rows.length){
 		return rows.length*100;
 	}
 	return 0;
-}
+};
 
 var calcIntervalByLevel = function(level){
 	return consts.DEFAULT_INTERVAL  - (level-1)*60;
-}
+};
 
 
 var defaults = {
 	maxHeight:700,
 	maxWidth:600
-}
+};
 
 function Tetris(id){
 	this.id = id;
@@ -107,13 +129,14 @@ Tetris.prototype = {
 		
 		var cfg = this.config = utils.extend(options,defaults);
 		this.interval = consts.DEFAULT_INTERVAL;
-		this.reset();
+		
 		
 		views.init(this.id, cfg.maxWidth,cfg.maxHeight);
 
 		canvas.init(views.scene,views.preview);
 
 		this.matrix = initMatrix(consts.ROW_COUNT,consts.COLUMN_COUNT);
+		this.reset();
 
 		this._initEvents();
 		this._fireShape();
@@ -122,13 +145,18 @@ Tetris.prototype = {
 	},
 	reset:function(){
 		this.running = false;
-		this.gameover = false;
+		this.isGameOver = false;
 		this.level = 1;
 		this.score = 0;
 		this.startTime = new Date().getTime();
 		this.currentTime = this.startTime;
 		this.prevTime = this.startTime;
 		this.levelTime = this.startTime;
+		clearMatrix(this.matrix);
+		views.setLevel(this.level);
+		views.setScore(this.score);
+		views.setGameOver(this.isGameOver);
+		this._draw();
 	},
 	start:function(){
 		this.running = true;
@@ -139,6 +167,9 @@ Tetris.prototype = {
 		this.currentTime = new Date().getTime();
 		this.prevTime = this.currentTime;
 	},
+	gamveOver:function(){
+
+	},
 	_keydownHandler:function(e){
 		
 		var matrix = this.matrix;
@@ -146,7 +177,7 @@ Tetris.prototype = {
 		if(!e) { 
 			var e = window.event;
 		}
-		if (!this.shape){
+		if (this.isGameOver||!this.shape){
 			return;
 		}
 
@@ -167,8 +198,13 @@ Tetris.prototype = {
 			break;
 		}
 	},
+	_restartHandler:function(){
+		this.reset();
+		this.start();
+	},
 	_initEvents:function(){
 		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
+		views.btnRestart.addEventListener('click',utils.proxy(this._restartHandler,this),false);
 	},
 
 	_fireShape:function(){
@@ -193,7 +229,9 @@ Tetris.prototype = {
 			this.prevTime = this.currentTime;
 			this._checkLevel();
 		}
-		window.requestAnimationFrame(utils.proxy(this._refresh,this));
+		if (!this.isGameOver){
+			window.requestAnimationFrame(utils.proxy(this._refresh,this));	
+		}
 	},
 	_update:function(){
 		if (this.shape.canDown(this.matrix)){
@@ -204,6 +242,11 @@ Tetris.prototype = {
 			this._fireShape();
 		}
 		this._draw();
+		this.isGameOver = checkGameOver(this.matrix);
+		views.setGameOver(this.isGameOver);
+		if (this.isGameOver){
+			views.setFinalScore(this.score);
+		}
 	},
 
 	_check:function(){
@@ -217,6 +260,7 @@ Tetris.prototype = {
 
 			views.setScore(this.score);
 			views.setReward(reward);
+
 		}
 	},
 	_checkLevel:function(){

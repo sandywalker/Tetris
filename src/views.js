@@ -12,6 +12,9 @@ var level = $('level');
 var score = $('score');
 var rewardInfo = $('rewardInfo');
 var reward = $('reward');
+var gameOver = $('gameOver');
+var btnRestart = $('restart');
+var finalScore = $('finalScore');
 
 
 //defaults
@@ -56,6 +59,8 @@ var layoutView = function(container,maxW,maxH){
 	preview.width = 80;
 	preview.height = 80;
 
+	gameOver.style.width = scene.width +'px';
+
 }
 
 
@@ -66,6 +71,7 @@ var tetrisView = {
 	  this.container = $(id);
 	  this.scene = scene;
 	  this.preview = preview;
+	  this.btnRestart = btnRestart;
 	  layoutView(this.container,maxW,maxH);
 	  this.scene.focus();
 
@@ -73,9 +79,11 @@ var tetrisView = {
 		 rewardInfo.className = 'invisible';
 	  });
 	},
-
 	setScore:function(scoreNumber){
 		score.innerHTML = scoreNumber;	
+	},
+	setFinalScore:function(scoreNumber){
+		finalScore.innerHTML = scoreNumber;
 	},
 	setLevel:function(levelNumber){
 		level.innerHTML = levelNumber;
@@ -87,6 +95,9 @@ var tetrisView = {
 		}else{
 			rewardInfo.className = 'invisible';
 		}
+	},
+	setGameOver:function(isGameOver){
+		gameOver.style.display = isGameOver?'block':'none';
 	}
 };
 

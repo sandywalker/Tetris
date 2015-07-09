@@ -24,6 +24,29 @@ body{
 	background: #2f2f2f;
 }
 
+#gameOver{
+	height:100%;
+	position: absolute;
+	background:rgba(0,0,0,.75);
+	z-index:999;
+	color:#ffe100;
+	text-align: center;
+	display: none;
+}
+
+#gameOver h1{
+	margin-top:50%;
+}
+
+#gameOver a,#gameOver a:visited{
+	color:#66bc29;
+	text-decoration: none;
+}
+
+#gameOver h2{
+	color:orange;
+}
+
 #side{
 	height:100%;
 	position: absolute;
@@ -70,6 +93,10 @@ body{
 	font-weight: bold;
 	height:20px;
 }
+
+
+
+
 
 .invisible{
 	visibility: hidden;

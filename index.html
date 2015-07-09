@@ -12,14 +12,22 @@
 <body>
 <div id="tetris">
 	<canvas id="scene"></canvas>
+	<div id="gameOver">
+		<h1>Game Over !</h1>
+		<h2>Score: <span id="finalScore">0</span></h2>
+		<h3><a href="#" id="restart">Restart</a></h2>
+		
+	</div>
 	<div id="side">
 		<div id="info">
 			<h1 id="levelInfo">Level: <br><span id="level">1</span></h1>
 			<h2 id="scoreInfo">Score: <br><span id="score" >0</span></h2>
+			<div id="rewardInfo" class="invisible">+<span id="reward">0</span></div>
 			<canvas id="preview"></canvas>
 		</div>
 	</div>
 </div>
+
 
 </body>
 <script src="dist/tetris.js"></script>
