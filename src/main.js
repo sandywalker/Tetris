@@ -86,6 +86,10 @@ var calcScore = function(rows){
 	return 0;
 }
 
+var calcIntervalByLevel = function(level){
+	return consts.DEFAULT_INTERVAL  - (level-1)*60;
+}
+
 
 var defaults = {
 	maxHeight:700,
@@ -102,15 +106,8 @@ Tetris.prototype = {
 	init:function(options){
 		
 		var cfg = this.config = utils.extend(options,defaults);
-
-		this.reset();
 		this.interval = consts.DEFAULT_INTERVAL;
-		this.running = false;
-		this.gameover = false;
-		this.level = 1;
-		this.score = 0;
-
-		
+		this.reset();
 		
 		views.init(this.id, cfg.maxWidth,cfg.maxHeight);
 
@@ -124,9 +121,14 @@ Tetris.prototype = {
 
 	},
 	reset:function(){
+		this.running = false;
+		this.gameover = false;
+		this.level = 1;
+		this.score = 0;
 		this.startTime = new Date().getTime();
 		this.currentTime = this.startTime;
 		this.prevTime = this.startTime;
+		this.levelTime = this.startTime;
 	},
 	start:function(){
 		this.running = true;
@@ -189,6 +191,7 @@ Tetris.prototype = {
 		if (this.currentTime - this.prevTime > this.interval ){
 			this._update();
 			this.prevTime = this.currentTime;
+			this._checkLevel();
 		}
 		window.requestAnimationFrame(utils.proxy(this._refresh,this));
 	},
@@ -214,6 +217,15 @@ Tetris.prototype = {
 
 			views.setScore(this.score);
 			views.setReward(reward);
+		}
+	},
+	_checkLevel:function(){
+		var currentTime = new Date().getTime();
+		if (currentTime - this.levelTime > consts.LEVEL_INTERVAL){
+			this.level+=1;
+			this.interval = calcIntervalByLevel(this.level);
+			views.setLevel(this.level);
+			this.levelTime = currentTime;
 		}
 	}
 }

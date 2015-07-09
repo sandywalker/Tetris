@@ -77,8 +77,8 @@ var tetrisView = {
 	setScore:function(scoreNumber){
 		score.innerHTML = scoreNumber;	
 	},
-	setLevel:function(level){
-
+	setLevel:function(levelNumber){
+		level.innerHTML = levelNumber;
 	},
 	setReward:function(rewardScore){
 		if (rewardScore>0){

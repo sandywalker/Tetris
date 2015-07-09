@@ -28,8 +28,7 @@ var boxBorderColor = 'rgba(255,255,255,0.5)';
 
 var defaultInterval = 600;
 
-var levelInterval = 20 * 1000; 
-
+var levelInterval = 120 * 1000; 
 
 
 
