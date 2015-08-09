@@ -506,18 +506,18 @@ function ShapeL(){
 	var state1 = [  [1, 0],
 					[1, 0],
 					[1, 1] ];
-					
+
 	var state2 = [  [0, 0, 1],
 					[1, 1, 1] ];
-					
+
 	var state3 = [  [1, 1],
 					[0, 1],
 					[0, 1] ];
-	
+
 	var state4 = [  [1, 1, 1],
 					[1, 0, 0] ];
-					
-	
+
+
 	this.states = [ state1, state2, state3, state4 ];
 	this.x = 4;
 	this.y = -3;
@@ -529,18 +529,18 @@ function ShapeLR()
 	var state1 = [  [0, 1],
 					[0, 1],
 					[1, 1] ];
-					
+
 	var state2 = [  [1, 1, 1],
 					[0, 0, 1] ];
-					
+
 	var state3 = [  [1, 1],
 					[1, 0],
 					[1, 0] ];
-	
+
 	var state4 = [  [1, 0, 0],
 					[1, 1, 1] ];
-					
-			
+
+
 	this.states = [ state1, state2, state3, state4 ];
 	this.x = 4;
 	this.y = -3;
@@ -549,11 +549,11 @@ function ShapeLR()
 
 function ShapeO()
 {
-	
+
 	var state1 = [  [1, 1],
 					[1, 1] ];
-					
-	
+
+
 	this.states = [ state1 ];
 	this.x = 4;
 	this.y = -2;
@@ -566,9 +566,9 @@ function ShapeI()
 					[1],
 					[1],
 					[1] ];
-					
+
 	var state2 = [  [1,1,1,1] ];
-					
+
 	this.states = [ state1, state2 ];
 
 	this.x = 5;
@@ -580,18 +580,18 @@ function ShapeT()
 {
 	var state1 = [  [1, 1, 1],
 					[0, 1, 0] ];
-					
+
 	var state2 = [  [1, 0],
 					[1, 1],
 					[1, 0] ];
-	
+
 	var state3 = [  [0, 1, 0],
 					[1, 1, 1] ];
-					
+
 	var state4 = [  [0, 1],
 					[1, 1],
 					[0, 1] ];
-					
+
 	this.states = [ state1, state2, state3, state4 ];
 	this.x = 4;
 	this.y = -2;
@@ -602,11 +602,11 @@ function ShapeZ()
 {
 	var state1 = [  [1, 1, 0],
 					[0, 1, 1] ];
-					
+
 	var state2 = [  [0, 1],
 					[1, 1],
 					[1, 0] ];
-					
+
 	this.states = [ state1, state2 ];
 	this.x = 4;
 	this.y = -2;
@@ -617,11 +617,11 @@ function ShapeZR()
 {
 	var state1 = [  [0, 1, 1],
 					[1, 1, 0] ];
-					
+
 	var state2 = [  [1, 0],
 					[1, 1],
 					[0, 1] ];
-					
+
 	this.states = [ state1, state2 ];
 	this.x = 4;
 	this.y = -2;
@@ -660,7 +660,7 @@ var isShapeCanMove = function(shape,matrix,action){
 	};
 
 	var boxes =  action === 'rotate'?shape.getBoxes(shape.nextState()) : shape.getBoxes(shape.state);
-	
+
 	for(var i in boxes){
 		if (!isBoxCanMove(boxes[i])){
 			return false;
@@ -669,12 +669,12 @@ var isShapeCanMove = function(shape,matrix,action){
 	return true;
 };
 
-ShapeL.prototype = 
-ShapeLR.prototype = 
-ShapeO.prototype = 
-ShapeI.prototype = 
-ShapeT.prototype = 
-ShapeZ.prototype = 
+ShapeL.prototype =
+ShapeLR.prototype =
+ShapeO.prototype =
+ShapeI.prototype =
+ShapeT.prototype =
+ShapeZ.prototype =
 ShapeZR.prototype = {
 
 	init:function(){
@@ -685,7 +685,7 @@ ShapeZR.prototype = {
 	},
 
 	getBoxes:function(state){
-		
+
 		var boxes = this.allBoxes[state]||[];
 		if (boxes.length){
 			return boxes;
@@ -760,7 +760,7 @@ ShapeZR.prototype = {
 	},
 	goRight:function(matrix){
 		if (isShapeCanMove(this,matrix,'right')){
-			this.x+=1;	
+			this.x+=1;
 		}
 	},
 	copyTo:function(matrix){
@@ -784,7 +784,7 @@ function randomShape()
 {
 	var result = Math.floor( Math.random() * 7 );
 	var shape;
-	
+
 	switch(result)
 	{
 		case 0: shape = new ShapeL();			break;
@@ -795,12 +795,12 @@ function randomShape()
 		case 5: shape = new ShapeZR();			break;
 		case 6: shape = new ShapeI();			break;
 	}
-	shape = new ShapeI();
 	shape.init();
 	return shape;
 }
 
 module.exports.randomShape = randomShape;
+
 },{"./consts.js":2}],5:[function(require,module,exports){
 
 var exports = module.exports = {};
@@ -817,6 +817,7 @@ var _isPlainObject = function(obj) {
     if (typeof obj !== 'object') {
         return false;
     }
+
 
     if (obj.constructor &&
         !hasOwnProperty.call(obj.constructor.prototype, 'isPrototypeOf')) {
