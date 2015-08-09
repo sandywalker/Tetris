@@ -14,6 +14,7 @@ var _isPlainObject = function(obj) {
         return false;
     }
 
+
     if (obj.constructor &&
         !hasOwnProperty.call(obj.constructor.prototype, 'isPrototypeOf')) {
         return false;
