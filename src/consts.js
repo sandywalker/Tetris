@@ -15,14 +15,19 @@ var rowCount = 20;
 //previewCount
 var previewCount = 6;
 
+//scene gradient start color 
 var sceneBgStart = '#8e9ba6';
 
+//scene gradient end color 
 var sceneBgEnd = '#5c6975';
 
+//preview background color
 var previewBg = '#2f2f2f';
 
+//grid line color
 var gridLineColor = 'rgba(255,255,255,0.2)';
 
+//box border color
 var boxBorderColor = 'rgba(255,255,255,0.5)';
 
 

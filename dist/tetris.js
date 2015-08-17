@@ -8,6 +8,7 @@ var lineColor =  consts.GRID_LINE_COLOR;
 
 var boxBorderColor = consts.BOX_BORDER_COLOR;
 
+//Draw a single line in canvas context
 var drawLine = function(ctx,p1,p2,color){
 	  	    ctx.beginPath();
 			ctx.moveTo(p1.x,p1.y);
@@ -21,6 +22,7 @@ var drawLine = function(ctx,p1,p2,color){
 };
 
 
+//Draw game grids
 var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 
 	  
@@ -48,6 +50,7 @@ var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 	  };
 };
 
+//Draw box of shape (shape is the composition of boxes)
 var drawBox = function(ctx,color,x,y,gridSize){
 			if (y<0){
 				return;
@@ -63,7 +66,9 @@ var drawBox = function(ctx,color,x,y,gridSize){
 			ctx.closePath();
 }
 
-
+/*
+	Canvas main object, use to draw all games data.
+*/
 var tetrisCanvas = {
 
 	init:function(scene,preview){
@@ -79,18 +84,22 @@ var tetrisCanvas = {
 		
 	},
 
+	//Clear game canvas
 	clearScene:function(){
 		this.sceneContext.clearRect(0, 0, this.scene.width, this.scene.height);
 	},
+	//Clear preview canvas
 	clearPreview:function(){
 		this.previewContext.clearRect(0,0,this.preview.width,this.preview.height);
 	},
+	//Draw game scene, grids
 	drawScene:function(){
 		this.clearScene();
 		drawGrids(this.scene,this.gridSize,
 			consts.COLUMN_COUNT,consts.ROW_COUNT,
 			consts.SCENE_BG_START,consts.SCENE_BG_END);
 	},
+	//Draw game data
 	drawMatrix:function(matrix){
 		for(var i = 0;i<matrix.length;i++){
 			var row = matrix[i];
@@ -101,11 +110,13 @@ var tetrisCanvas = {
 			}
 		}	
 	},
+	//Draw preview data
 	drawPreview:function(){
 		drawGrids(this.preview,this.previewGridSize,
 			consts.PREVIEW_COUNT,consts.PREVIEW_COUNT,
 			consts.PREVIEW_BG,consts.PREVIEW_BG);
 	},
+	//Draw acitve shape in game
 	drawShape:function(shape){
 		if (!shape){
 			return;
@@ -123,6 +134,7 @@ var tetrisCanvas = {
 			}
 		}
 	},
+	//Draw preview shape in preview canvas
 	drawPreviewShape:function(shape){
 		if (!shape){
 			return;
@@ -167,14 +179,19 @@ var rowCount = 20;
 //previewCount
 var previewCount = 6;
 
+//scene gradient start color 
 var sceneBgStart = '#8e9ba6';
 
+//scene gradient end color 
 var sceneBgEnd = '#5c6975';
 
+//preview background color
 var previewBg = '#2f2f2f';
 
+//grid line color
 var gridLineColor = 'rgba(255,255,255,0.2)';
 
+//box border color
 var boxBorderColor = 'rgba(255,255,255,0.5)';
 
 
@@ -296,6 +313,9 @@ var removeRows = function(matrix,rows){
 	}
 };
 
+/**
+	Check game data to determin wether the  game is over
+*/
 var checkGameOver = function(matrix){
 	var firstRow = matrix[0];
 	for(var i = 0;i<firstRow.length;i++){
@@ -317,6 +337,9 @@ var calcRewards = function(rows){
 	return 0;
 };
 
+/**
+	Calculate game score
+*/
 var calcScore = function(rows){
 	if (rows&&rows.length){
 		return rows.length*100;
@@ -324,16 +347,23 @@ var calcScore = function(rows){
 	return 0;
 };
 
+/**
+	Calculate time interval by level, the higher the level,the faster shape moves
+*/
 var calcIntervalByLevel = function(level){
 	return consts.DEFAULT_INTERVAL  - (level-1)*60;
 };
 
 
+// Default max scene size
 var defaults = {
 	maxHeight:700,
 	maxWidth:600
 };
 
+/**
+	Tetris main object defination
+*/
 function Tetris(id){
 	this.id = id;
 	this.init();
@@ -359,6 +389,7 @@ Tetris.prototype = {
 
 
 	},
+	//Reset game
 	reset:function(){
 		this.running = false;
 		this.isGameOver = false;
@@ -374,18 +405,22 @@ Tetris.prototype = {
 		views.setGameOver(this.isGameOver);
 		this._draw();
 	},
+	//Start game
 	start:function(){
 		this.running = true;
 		window.requestAnimationFrame(utils.proxy(this._refresh,this));
 	},
+	//Pause game
 	pause:function(){
 		this.running = false;
 		this.currentTime = new Date().getTime();
 		this.prevTime = this.currentTime;
 	},
+	//Game over
 	gamveOver:function(){
 
 	},
+	// All key event handlers
 	_keydownHandler:function(e){
 		
 		var matrix = this.matrix;
@@ -414,15 +449,18 @@ Tetris.prototype = {
 			break;
 		}
 	},
+	// Restart game
 	_restartHandler:function(){
 		this.reset();
 		this.start();
 	},
+	// Bind game events
 	_initEvents:function(){
 		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
 		views.btnRestart.addEventListener('click',utils.proxy(this._restartHandler,this),false);
 	},
 
+	// Fire a new random shape
 	_fireShape:function(){
 		this.shape = this.preparedShape||shapes.randomShape();
 		this.preparedShape = shapes.randomShape();
@@ -430,11 +468,13 @@ Tetris.prototype = {
 		canvas.drawPreviewShape(this.preparedShape);
 	},
 	
+	// Draw game data
 	_draw:function(){
 		canvas.drawScene(); 
 		canvas.drawShape(this.shape);
 		canvas.drawMatrix(this.matrix);
 	},
+	// Refresh game canvas
 	_refresh:function(){
 		if (!this.running){
 			return;
@@ -449,6 +489,7 @@ Tetris.prototype = {
 			window.requestAnimationFrame(utils.proxy(this._refresh,this));	
 		}
 	},
+	// Update game data
 	_update:function(){
 		if (this.shape.canDown(this.matrix)){
 			this.shape.goDown(this.matrix);
@@ -464,7 +505,7 @@ Tetris.prototype = {
 			views.setFinalScore(this.score);
 		}
 	},
-
+	// Check and update game data
 	_check:function(){
 		var rows = checkFullRows(this.matrix);
 		if (rows.length){
@@ -479,6 +520,7 @@ Tetris.prototype = {
 
 		}
 	},
+	// Check and update game level
 	_checkLevel:function(){
 		var currentTime = new Date().getTime();
 		if (currentTime - this.levelTime > consts.LEVEL_INTERVAL){
@@ -502,6 +544,12 @@ window.Tetris = Tetris;
 var consts = require('./consts.js');
 var COLORS =  consts.COLORS;
 var COLUMN_COUNT = consts.COLUMN_COUNT;
+
+/**
+	Defined all shapes used in Tetris game. 
+	You can add more shapes if you wish.
+*/
+
 function ShapeL(){
 	var state1 = [  [1, 0],
 					[1, 0],
@@ -669,6 +717,9 @@ var isShapeCanMove = function(shape,matrix,action){
 	return true;
 };
 
+/**
+ All shapes shares the same method, use prototype for memory optimized
+*/
 ShapeL.prototype =
 ShapeLR.prototype =
 ShapeO.prototype =
@@ -683,7 +734,7 @@ ShapeZR.prototype = {
 		this.allBoxes = {};
 		this.y = 0;
 	},
-
+	// Get boxes matrix which composite the shape
 	getBoxes:function(state){
 
 		var boxes = this.allBoxes[state]||[];
@@ -703,10 +754,12 @@ ShapeZR.prototype = {
 		this.allBoxes[state] = boxes;
 		return boxes;
 	},
+	//Get matrix for specified state
 	matrix:function(state){
 		var st = state!==undefined?state:this.state;
 		return this.states[st];
 	},
+	//Rotate shape
 	rotate:function(matrix){
 		if (isShapeCanMove(this,matrix,'rotate')){
 			this.state = this.nextState();
@@ -717,6 +770,7 @@ ShapeZR.prototype = {
 			}
 		}
 	},
+	//Caculate the max column of the shape
 	getColumnCount:function(){
 		var mtx = this.matrix();
 		var colCount = 0;
@@ -725,9 +779,11 @@ ShapeZR.prototype = {
 		}
 		return colCount;
 	},
+	//Caculate the max row of the shape
 	getRowCount:function(){
 		return this.matrix().length;
 	},
+	//Get the right pos of the shape
 	getRight:function(){
 		var boxes = this.getBoxes(this.state);
 		var right = 0;
@@ -737,32 +793,39 @@ ShapeZR.prototype = {
 		}
 		return this.x + right;
 	},
+	//Return the next state of the shape
 	nextState:function(){
 		return (this.state + 1) % this.states.length;
 	},
+	//Check if the shape can move down
 	canDown:function(matrix){
 		return isShapeCanMove(this,matrix,'down');
 	},
+	//Move the shape down 
 	goDown:function(matrix){
 		if (isShapeCanMove(this,matrix,'down')){
 			this.y+=1;
 		}
 	},
+	//Move the shape to the Bottommost
 	goBottom:function(matrix){
 		while (isShapeCanMove(this,matrix,'down')){
 			this.y+=1;
 		}
 	},
+	//Move the shape to the left
 	goLeft:function(matrix){
 		if (isShapeCanMove(this,matrix,'left')){
 			this.x-=1;
 		}
 	},
+	//Move the shape to the right
 	goRight:function(matrix){
 		if (isShapeCanMove(this,matrix,'right')){
 			this.x+=1;
 		}
 	},
+	//Copy the shape data to the game data
 	copyTo:function(matrix){
 		var smatrix = this.matrix();
 		for(var i = 0;i<smatrix.length;i++){
@@ -780,6 +843,9 @@ ShapeZR.prototype = {
 	}
 }
 
+/**
+	Create  a random shape for game
+*/
 function randomShape()
 {
 	var result = Math.floor( Math.random() * 7 );
@@ -914,6 +980,9 @@ exports.extend = extend;
 exports.proxy = proxy;
 
 },{}],6:[function(require,module,exports){
+/**
+ All dom definitions and actions
+*/
 var utils = require('./utils.js');
 var consts = require('./consts.js');
 
@@ -937,6 +1006,9 @@ var finalScore = $('finalScore');
 var SIDE_WIDTH = consts.SIDE_WIDTH;
 
 
+/**
+	Caculate the game container size
+*/
 var getContainerSize = function(maxW,maxH){
 
 	var dw = document.documentElement.clientWidth;
@@ -955,6 +1027,9 @@ var getContainerSize = function(maxW,maxH){
 };
 
 
+/**
+	Layout game elements
+*/
 var layoutView = function(container,maxW,maxH){
 	var size = getContainerSize(maxW,maxH);
 	var st = container.style;
@@ -979,7 +1054,9 @@ var layoutView = function(container,maxW,maxH){
 
 }
 
-
+/**
+	Main tetris game view
+*/
 var tetrisView = {
 
 
@@ -995,15 +1072,19 @@ var tetrisView = {
 		 rewardInfo.className = 'invisible';
 	  });
 	},
+	// Update the score 
 	setScore:function(scoreNumber){
 		score.innerHTML = scoreNumber;	
 	},
+	// Update the finnal score
 	setFinalScore:function(scoreNumber){
 		finalScore.innerHTML = scoreNumber;
 	},
+	// Update the level
 	setLevel:function(levelNumber){
 		level.innerHTML = levelNumber;
 	},
+	// Update the extra reward score
 	setReward:function(rewardScore){
 		if (rewardScore>0){
 			reward.innerHTML = rewardScore;
@@ -1012,6 +1093,7 @@ var tetrisView = {
 			rewardInfo.className = 'invisible';
 		}
 	},
+	// Set game over view
 	setGameOver:function(isGameOver){
 		gameOver.style.display = isGameOver?'block':'none';
 	}

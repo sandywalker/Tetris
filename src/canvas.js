@@ -7,6 +7,7 @@ var lineColor =  consts.GRID_LINE_COLOR;
 
 var boxBorderColor = consts.BOX_BORDER_COLOR;
 
+//Draw a single line in canvas context
 var drawLine = function(ctx,p1,p2,color){
 	  	    ctx.beginPath();
 			ctx.moveTo(p1.x,p1.y);
@@ -20,6 +21,7 @@ var drawLine = function(ctx,p1,p2,color){
 };
 
 
+//Draw game grids
 var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 
 	  
@@ -47,6 +49,7 @@ var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 	  };
 };
 
+//Draw box of shape (shape is the composition of boxes)
 var drawBox = function(ctx,color,x,y,gridSize){
 			if (y<0){
 				return;
@@ -62,7 +65,9 @@ var drawBox = function(ctx,color,x,y,gridSize){
 			ctx.closePath();
 }
 
-
+/*
+	Canvas main object, use to draw all games data.
+*/
 var tetrisCanvas = {
 
 	init:function(scene,preview){
@@ -78,18 +83,22 @@ var tetrisCanvas = {
 		
 	},
 
+	//Clear game canvas
 	clearScene:function(){
 		this.sceneContext.clearRect(0, 0, this.scene.width, this.scene.height);
 	},
+	//Clear preview canvas
 	clearPreview:function(){
 		this.previewContext.clearRect(0,0,this.preview.width,this.preview.height);
 	},
+	//Draw game scene, grids
 	drawScene:function(){
 		this.clearScene();
 		drawGrids(this.scene,this.gridSize,
 			consts.COLUMN_COUNT,consts.ROW_COUNT,
 			consts.SCENE_BG_START,consts.SCENE_BG_END);
 	},
+	//Draw game data
 	drawMatrix:function(matrix){
 		for(var i = 0;i<matrix.length;i++){
 			var row = matrix[i];
@@ -100,11 +109,13 @@ var tetrisCanvas = {
 			}
 		}	
 	},
+	//Draw preview data
 	drawPreview:function(){
 		drawGrids(this.preview,this.previewGridSize,
 			consts.PREVIEW_COUNT,consts.PREVIEW_COUNT,
 			consts.PREVIEW_BG,consts.PREVIEW_BG);
 	},
+	//Draw acitve shape in game
 	drawShape:function(shape){
 		if (!shape){
 			return;
@@ -122,6 +133,7 @@ var tetrisCanvas = {
 			}
 		}
 	},
+	//Draw preview shape in preview canvas
 	drawPreviewShape:function(shape){
 		if (!shape){
 			return;

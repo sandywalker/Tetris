@@ -80,6 +80,9 @@ var removeRows = function(matrix,rows){
 	}
 };
 
+/**
+	Check game data to determin wether the  game is over
+*/
 var checkGameOver = function(matrix){
 	var firstRow = matrix[0];
 	for(var i = 0;i<firstRow.length;i++){
@@ -101,6 +104,9 @@ var calcRewards = function(rows){
 	return 0;
 };
 
+/**
+	Calculate game score
+*/
 var calcScore = function(rows){
 	if (rows&&rows.length){
 		return rows.length*100;
@@ -108,16 +114,23 @@ var calcScore = function(rows){
 	return 0;
 };
 
+/**
+	Calculate time interval by level, the higher the level,the faster shape moves
+*/
 var calcIntervalByLevel = function(level){
 	return consts.DEFAULT_INTERVAL  - (level-1)*60;
 };
 
 
+// Default max scene size
 var defaults = {
 	maxHeight:700,
 	maxWidth:600
 };
 
+/**
+	Tetris main object defination
+*/
 function Tetris(id){
 	this.id = id;
 	this.init();
@@ -143,6 +156,7 @@ Tetris.prototype = {
 
 
 	},
+	//Reset game
 	reset:function(){
 		this.running = false;
 		this.isGameOver = false;
@@ -158,18 +172,22 @@ Tetris.prototype = {
 		views.setGameOver(this.isGameOver);
 		this._draw();
 	},
+	//Start game
 	start:function(){
 		this.running = true;
 		window.requestAnimationFrame(utils.proxy(this._refresh,this));
 	},
+	//Pause game
 	pause:function(){
 		this.running = false;
 		this.currentTime = new Date().getTime();
 		this.prevTime = this.currentTime;
 	},
+	//Game over
 	gamveOver:function(){
 
 	},
+	// All key event handlers
 	_keydownHandler:function(e){
 		
 		var matrix = this.matrix;
@@ -198,15 +216,18 @@ Tetris.prototype = {
 			break;
 		}
 	},
+	// Restart game
 	_restartHandler:function(){
 		this.reset();
 		this.start();
 	},
+	// Bind game events
 	_initEvents:function(){
 		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
 		views.btnRestart.addEventListener('click',utils.proxy(this._restartHandler,this),false);
 	},
 
+	// Fire a new random shape
 	_fireShape:function(){
 		this.shape = this.preparedShape||shapes.randomShape();
 		this.preparedShape = shapes.randomShape();
@@ -214,11 +235,13 @@ Tetris.prototype = {
 		canvas.drawPreviewShape(this.preparedShape);
 	},
 	
+	// Draw game data
 	_draw:function(){
 		canvas.drawScene(); 
 		canvas.drawShape(this.shape);
 		canvas.drawMatrix(this.matrix);
 	},
+	// Refresh game canvas
 	_refresh:function(){
 		if (!this.running){
 			return;
@@ -233,6 +256,7 @@ Tetris.prototype = {
 			window.requestAnimationFrame(utils.proxy(this._refresh,this));	
 		}
 	},
+	// Update game data
 	_update:function(){
 		if (this.shape.canDown(this.matrix)){
 			this.shape.goDown(this.matrix);
@@ -248,7 +272,7 @@ Tetris.prototype = {
 			views.setFinalScore(this.score);
 		}
 	},
-
+	// Check and update game data
 	_check:function(){
 		var rows = checkFullRows(this.matrix);
 		if (rows.length){
@@ -263,6 +287,7 @@ Tetris.prototype = {
 
 		}
 	},
+	// Check and update game level
 	_checkLevel:function(){
 		var currentTime = new Date().getTime();
 		if (currentTime - this.levelTime > consts.LEVEL_INTERVAL){

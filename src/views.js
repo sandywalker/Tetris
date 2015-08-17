@@ -1,3 +1,6 @@
+/**
+ All dom definitions and actions
+*/
 var utils = require('./utils.js');
 var consts = require('./consts.js');
 
@@ -21,6 +24,9 @@ var finalScore = $('finalScore');
 var SIDE_WIDTH = consts.SIDE_WIDTH;
 
 
+/**
+	Caculate the game container size
+*/
 var getContainerSize = function(maxW,maxH){
 
 	var dw = document.documentElement.clientWidth;
@@ -39,6 +45,9 @@ var getContainerSize = function(maxW,maxH){
 };
 
 
+/**
+	Layout game elements
+*/
 var layoutView = function(container,maxW,maxH){
 	var size = getContainerSize(maxW,maxH);
 	var st = container.style;
@@ -63,7 +72,9 @@ var layoutView = function(container,maxW,maxH){
 
 }
 
-
+/**
+	Main tetris game view
+*/
 var tetrisView = {
 
 
@@ -79,15 +90,19 @@ var tetrisView = {
 		 rewardInfo.className = 'invisible';
 	  });
 	},
+	// Update the score 
 	setScore:function(scoreNumber){
 		score.innerHTML = scoreNumber;	
 	},
+	// Update the finnal score
 	setFinalScore:function(scoreNumber){
 		finalScore.innerHTML = scoreNumber;
 	},
+	// Update the level
 	setLevel:function(levelNumber){
 		level.innerHTML = levelNumber;
 	},
+	// Update the extra reward score
 	setReward:function(rewardScore){
 		if (rewardScore>0){
 			reward.innerHTML = rewardScore;
@@ -96,6 +111,7 @@ var tetrisView = {
 			rewardInfo.className = 'invisible';
 		}
 	},
+	// Set game over view
 	setGameOver:function(isGameOver){
 		gameOver.style.display = isGameOver?'block':'none';
 	}

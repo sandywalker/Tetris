@@ -1,6 +1,12 @@
 var consts = require('./consts.js');
 var COLORS =  consts.COLORS;
 var COLUMN_COUNT = consts.COLUMN_COUNT;
+
+/**
+	Defined all shapes used in Tetris game. 
+	You can add more shapes if you wish.
+*/
+
 function ShapeL(){
 	var state1 = [  [1, 0],
 					[1, 0],
@@ -168,6 +174,9 @@ var isShapeCanMove = function(shape,matrix,action){
 	return true;
 };
 
+/**
+ All shapes shares the same method, use prototype for memory optimized
+*/
 ShapeL.prototype =
 ShapeLR.prototype =
 ShapeO.prototype =
@@ -182,7 +191,7 @@ ShapeZR.prototype = {
 		this.allBoxes = {};
 		this.y = 0;
 	},
-
+	// Get boxes matrix which composite the shape
 	getBoxes:function(state){
 
 		var boxes = this.allBoxes[state]||[];
@@ -202,10 +211,12 @@ ShapeZR.prototype = {
 		this.allBoxes[state] = boxes;
 		return boxes;
 	},
+	//Get matrix for specified state
 	matrix:function(state){
 		var st = state!==undefined?state:this.state;
 		return this.states[st];
 	},
+	//Rotate shape
 	rotate:function(matrix){
 		if (isShapeCanMove(this,matrix,'rotate')){
 			this.state = this.nextState();
@@ -216,6 +227,7 @@ ShapeZR.prototype = {
 			}
 		}
 	},
+	//Caculate the max column of the shape
 	getColumnCount:function(){
 		var mtx = this.matrix();
 		var colCount = 0;
@@ -224,9 +236,11 @@ ShapeZR.prototype = {
 		}
 		return colCount;
 	},
+	//Caculate the max row of the shape
 	getRowCount:function(){
 		return this.matrix().length;
 	},
+	//Get the right pos of the shape
 	getRight:function(){
 		var boxes = this.getBoxes(this.state);
 		var right = 0;
@@ -236,32 +250,39 @@ ShapeZR.prototype = {
 		}
 		return this.x + right;
 	},
+	//Return the next state of the shape
 	nextState:function(){
 		return (this.state + 1) % this.states.length;
 	},
+	//Check if the shape can move down
 	canDown:function(matrix){
 		return isShapeCanMove(this,matrix,'down');
 	},
+	//Move the shape down 
 	goDown:function(matrix){
 		if (isShapeCanMove(this,matrix,'down')){
 			this.y+=1;
 		}
 	},
+	//Move the shape to the Bottommost
 	goBottom:function(matrix){
 		while (isShapeCanMove(this,matrix,'down')){
 			this.y+=1;
 		}
 	},
+	//Move the shape to the left
 	goLeft:function(matrix){
 		if (isShapeCanMove(this,matrix,'left')){
 			this.x-=1;
 		}
 	},
+	//Move the shape to the right
 	goRight:function(matrix){
 		if (isShapeCanMove(this,matrix,'right')){
 			this.x+=1;
 		}
 	},
+	//Copy the shape data to the game data
 	copyTo:function(matrix){
 		var smatrix = this.matrix();
 		for(var i = 0;i<smatrix.length;i++){
@@ -279,6 +300,9 @@ ShapeZR.prototype = {
 	}
 }
 
+/**
+	Create  a random shape for game
+*/
 function randomShape()
 {
 	var result = Math.floor( Math.random() * 7 );
