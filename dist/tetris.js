@@ -472,6 +472,8 @@ Tetris.prototype = {
 		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
 		views.btnRestart.addEventListener('click',utils.proxy(this._restartHandler,this),false);
 		views.NewRestart.addEventListener('click',utils.proxy(this._restartHandler,this),false);
+  	views.NewPause.addEventListener('click',utils.proxy(this.pause,this),false);
+		views.NewPlay.addEventListener('click',utils.proxy(this.start,this),false);
 
 	},
 
@@ -1015,6 +1017,9 @@ var reward = $('reward');
 var gameOver = $('gameOver');
 var btnRestart = $('restart');
 var NewRestart = $('restart_button');
+var NewPause = $('pause_button');
+var NewPlay = $('play_button');
+
 var finalScore = $('finalScore');
 
 
@@ -1081,7 +1086,10 @@ var tetrisView = {
 	  this.scene = scene;
 	  this.preview = preview;
 	  this.btnRestart = btnRestart;
+    this.NewPlay = NewPlay;
 		this.NewRestart = NewRestart;
+		this.NewPause = NewPause;
+
 	  layoutView(this.container,maxW,maxH);
 	  this.scene.focus();
 
