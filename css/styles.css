@@ -111,7 +111,75 @@ body{
 	width: 50px;
 }
 
+#info_button{
+	position: absolute;
+	height: 40px;
+	width: 40px;
+	bottom: 0;
+	right: 0;
+}
 
+
+#modal_backdrop{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
+#info_modal{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1010;
+  overflow: scroll;
+}
+
+.info_dialog{
+  width: auto;
+  max-width: 600px;
+  min-width: 350px;
+  min-height: 300px;
+  margin: 40px auto;
+  background-color: #fff;
+  border-radius: 15px;
+}
+
+.info_header{
+  position: relative;
+  padding: 10px 20px;
+  height: 20px;
+}
+
+.info_controls_header{
+  position: relative;
+  padding: 10px 20px;
+}
+
+.info_instructions_header{
+  position: relative;
+  padding: 10px 20px;
+}
+
+.info_close_button{
+  float: right;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: large;
+  padding: 10px;
+  position: relative;
+  z-index: 1000;
+}
+
+.hidden{
+  display: none;
+}
 
 
 .invisible{
