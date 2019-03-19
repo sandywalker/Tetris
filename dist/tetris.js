@@ -1019,12 +1019,45 @@ var btnRestart = $('restart');
 var NewRestart = $('restart_button');
 var NewPause = $('pause_button');
 var NewPlay = $('play_button');
-
+var btnInfo = $('info_button');
 var finalScore = $('finalScore');
 
 
 //defaults
 var SIDE_WIDTH = consts.SIDE_WIDTH;
+
+
+function showInfoModal() {
+
+  var modalBackdrop = document.getElementById('modal_backdrop');
+  var infoModal = document.getElementById('info_modal');
+
+  // Show the modal and its backdrop.
+  modalBackdrop.classList.remove('hidden');
+  infoModal.classList.remove('hidden');
+
+}
+
+function hideInfoModal() {
+
+  var modalBackdrop = document.getElementById('modal_backdrop');
+  var infoModal = document.getElementById('info_modal');
+
+  // Show the modal and its backdrop.
+  modalBackdrop.classList.add('hidden');
+  infoModal.classList.add('hidden');
+
+}
+
+var infoButton = document.getElementById('info_button');
+if (infoButton) {
+  infoButton.addEventListener('click', showInfoModal);
+};
+
+var modalCloseButton = document.querySelector('#info_modal .info_close_button');
+if (modalCloseButton) {
+  modalCloseButton.addEventListener('click', hideInfoModal);
+};
 
 
 /**
