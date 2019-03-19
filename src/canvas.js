@@ -7,63 +7,85 @@ var lineColor =  consts.GRID_LINE_COLOR;
 
 var boxBorderColor = consts.BOX_BORDER_COLOR;
 
+function lineProperties(ctx,p1,p2,color){
+	this.ctx = ctx;
+	this.p1 = p1;
+	this.p2 = p2;
+	this.color = color;
+}
+
+function gridProperties(el,gridSize,colCount,rowCount,color1,color2){
+	this.el = el;
+	this.gridSize = gridSize;
+	this.colCount = colCount;
+	this.rowCount = rowCount;
+	this.color1 = color1;
+	this.color2 = color2;
+}
+
 //Draw a single line in canvas context
-var drawLine = function(ctx,p1,p2,color){
-	  	    ctx.beginPath();
-			ctx.moveTo(p1.x,p1.y);
-			ctx.lineTo(p2.x,p2.y);
-			
-			ctx.lineWidth=1;
-			ctx.strokeStyle= color;
-			
-			ctx.stroke();
-			ctx.closePath();
+var drawLine = function(lineProps){
+	lineProps.ctx.beginPath();
+
+	var p1 = lineProps.p1;
+	var p2 = lineProps.p2;
+
+	lineProps.ctx.moveTo(p1.x,p1.y);
+	lineProps.ctx.lineTo(p2.x,p2.y);
+
+	lineProps.ctx.lineWidth = 1;
+	lineProps.ctx.strokeStyle = color;
+
+	lineProps.ctx.stroke();
+	lineProps.ctx.closePath();
 };
 
-
 //Draw game grids
-var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
+var drawGrids = function(gridProps){
+	var ctx = gridProps.el.getContext('2d');
+	var width = gridProps.el.width;
+	var height = gridProps.el.height;
 
-	  
+	ctx.rect(0, 0, width, height);
 
-	  var ctx = el.getContext('2d');
-	  var width = el.width;
-	  var height = el.height;
+	var grd = ctx.createLinearGradient(0, 0, 0, height);
+	grd.addColorStop(0, gridProps.color1);   
+	grd.addColorStop(1, gridProps.color2);
+	ctx.fillStyle = grd;
+	ctx.fill();
 
-	  ctx.rect(0, 0, width, height);
+	var lineProps = lineProperties(ctx, 0, 0, lineColor);
 
-      var grd = ctx.createLinearGradient(0, 0, 0, height);
-      grd.addColorStop(0, color1);   
-      grd.addColorStop(1, color2);
-      ctx.fillStyle = grd;
-      ctx.fill();
-      
+	for (var i = 1; i < gridProps.colCount; i++) {
+		var x = gridProps.gridSize*i+0.5;
+		lineProps.p1 = {x:x,y:0};
+		lineProps.p2 = {x:x,y:height};
+		drawLine(lineProps);
+	};
 
-	  for (var i = 1; i < colCount; i++) {
-	  		var x = gridSize*i+0.5;
-			drawLine(ctx,{x:x,y:0},{x:x,y:height},lineColor);
-	  };
-	  for (var i = 1; i < rowCount; i++) {
-			var y = gridSize*i+0.5;
-			drawLine(ctx,{x:0,y:y},{x:width,y:y},lineColor);
-	  };
+	for (var i = 1; i < gridProps.rowCount; i++) {
+		var y = gridProps.gridSize*i+0.5;
+		lineProps.p1 = {x:0,y:y};
+		lineProps.p2 = {x:width,y:y};
+		drawLine(lineProps);
+	};
 };
 
 //Draw box of shape (shape is the composition of boxes)
-var drawBox = function(ctx,color,x,y,gridSize){
-			if (y<0){
-				return;
-			}
+	var drawBox = function(ctx,color,x,y,gridSize){
+	if (y<0){
+		return;
+	}
 
-			ctx.beginPath();
-			ctx.rect(x,y,gridSize,gridSize);
-			ctx.fillStyle = color;
-			ctx.fill();
-			ctx.strokeStyle= boxBorderColor;
-			ctx.lineWidth=1;
-			ctx.stroke();
-			ctx.closePath();
-}
+	ctx.beginPath();
+	ctx.rect(x,y,gridSize,gridSize);
+	ctx.fillStyle = color;
+	ctx.fill();
+	ctx.strokeStyle= boxBorderColor;
+	ctx.lineWidth=1;
+	ctx.stroke();
+	ctx.closePath();
+	}
 
 /*
 	Canvas main object, use to draw all games data.
@@ -94,9 +116,10 @@ var tetrisCanvas = {
 	//Draw game scene, grids
 	drawScene:function(){
 		this.clearScene();
-		drawGrids(this.scene,this.gridSize,
+		var gridProps = gridProperties(this.scene,this.gridSize,
 			consts.COLUMN_COUNT,consts.ROW_COUNT,
-			consts.SCENE_BG_START,consts.SCENE_BG_END);
+			consts.SCENE_BG_START,consts.SCENE_BG_END); ///
+		drawGrids(gridProps);
 	},
 	//Draw game data
 	drawMatrix:function(matrix){
@@ -111,9 +134,10 @@ var tetrisCanvas = {
 	},
 	//Draw preview data
 	drawPreview:function(){
-		drawGrids(this.preview,this.previewGridSize,
+		var gridProps = gridProperties(this.preview,this.previewGridSize,
 			consts.PREVIEW_COUNT,consts.PREVIEW_COUNT,
 			consts.PREVIEW_BG,consts.PREVIEW_BG);
+		drawGrids(gridProps); ///
 	},
 	//Draw acitve shape in game
 	drawShape:function(shape){
@@ -124,8 +148,7 @@ var tetrisCanvas = {
 		var gsize = this.gridSize;
 		for(var i = 0;i<matrix.length;i++){
 			for(var j = 0;j<matrix[i].length;j++){
-				var value = matrix[i][j];
-				if (value === 1){
+				if (matrix[i][j] === 1){
 					var x = gsize *(shape.x + j);
 					var y = gsize *(shape.y + i);
 					drawBox(this.sceneContext,shape.color,x,y,gsize);
@@ -145,8 +168,7 @@ var tetrisCanvas = {
 		var startY = (this.preview.height - gsize*shape.getRowCount()) / 2;
 		for(var i = 0;i<matrix.length;i++){
 			for(var j = 0;j<matrix[i].length;j++){
-				var value = matrix[i][j];
-				if (value === 1){
+				if (matrix[i][j] === 1){
 					var x = startX + gsize * j;
 					var y = startY + gsize * i;
 					drawBox(this.previewContext,shape.color,x,y,gsize);
