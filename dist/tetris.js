@@ -13,10 +13,10 @@ var drawLine = function(ctx,p1,p2,color){
 	  	    ctx.beginPath();
 			ctx.moveTo(p1.x,p1.y);
 			ctx.lineTo(p2.x,p2.y);
-			
+
 			ctx.lineWidth=1;
 			ctx.strokeStyle= color;
-			
+
 			ctx.stroke();
 			ctx.closePath();
 };
@@ -25,7 +25,7 @@ var drawLine = function(ctx,p1,p2,color){
 //Draw game grids
 var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 
-	  
+
 
 	  var ctx = el.getContext('2d');
 	  var width = el.width;
@@ -34,11 +34,11 @@ var drawGrids = function(el,gridSize,colCount,rowCount,color1,color2){
 	  ctx.rect(0, 0, width, height);
 
       var grd = ctx.createLinearGradient(0, 0, 0, height);
-      grd.addColorStop(0, color1);   
+      grd.addColorStop(0, color1);
       grd.addColorStop(1, color2);
       ctx.fillStyle = grd;
       ctx.fill();
-      
+
 
 	  for (var i = 1; i < colCount; i++) {
 	  		var x = gridSize*i+0.5;
@@ -81,7 +81,7 @@ var tetrisCanvas = {
 		this.previewGridSize = preview.width / consts.PREVIEW_COUNT;
 
 		this.drawScene();
-		
+
 	},
 
 	//Clear game canvas
@@ -108,7 +108,7 @@ var tetrisCanvas = {
 					drawBox(this.sceneContext,row[j],j*this.gridSize,i*this.gridSize,this.gridSize);
 				}
 			}
-		}	
+		}
 	},
 	//Draw preview data
 	drawPreview:function(){
@@ -179,10 +179,10 @@ var rowCount = 20;
 //previewCount
 var previewCount = 6;
 
-//scene gradient start color 
+//scene gradient start color
 var sceneBgStart = '#8e9ba6';
 
-//scene gradient end color 
+//scene gradient end color
 var sceneBgEnd = '#5c6975';
 
 //preview background color
@@ -199,8 +199,8 @@ var boxBorderColor = 'rgba(255,255,255,0.5)';
 var defaultInterval = 600;
 
 
-// Level update interval 
-var levelInterval = 120 * 1000; 
+// Level update interval
+var levelInterval = 120 * 1000;
 
 
 
@@ -285,11 +285,11 @@ var checkFullRows = function(matrix){
   		}
   	}
 
-  	return rowNumbers;	
+  	return rowNumbers;
 };
 
 /**
-	Remove one row from game matrix. 
+	Remove one row from game matrix.
 	copy each previous row data to  next row  which row number less than row;
 */
 var removeOneRow = function(matrix,row){
@@ -300,9 +300,9 @@ var removeOneRow = function(matrix,row){
 				matrix[i][j] = matrix[i-1][j];
 			}else{
 				matrix[i][j] = 0 ;
-			}	
+			}
 		}
-	}	
+	}
 };
 /**
 	Remove rows from game matrix by row numbers.
@@ -332,7 +332,7 @@ var checkGameOver = function(matrix){
 */
 var calcRewards = function(rows){
 	if (rows&&rows.length>1){
-		return Math.pow(2,rows.length - 1)*100;	
+		return Math.pow(2,rows.length - 1)*100;
 	}
 	return 0;
 };
@@ -372,11 +372,11 @@ function Tetris(id){
 Tetris.prototype = {
 
 	init:function(options){
-		
+
 		var cfg = this.config = utils.extend(options,defaults);
 		this.interval = consts.DEFAULT_INTERVAL;
-		
-		
+
+
 		views.init(this.id, cfg.maxWidth,cfg.maxHeight);
 
 		canvas.init(views.scene,views.preview);
@@ -416,16 +416,29 @@ Tetris.prototype = {
 		this.currentTime = new Date().getTime();
 		this.prevTime = this.currentTime;
 	},
+	//New pause
+	Newpause:function(){
+		if(PlayBool == true){
+			this.running = false;
+			this.currentTime = new Date().getTime();
+			this.prevTime = this.currentTime;
+			PlayBool = false;
+		}
+		else{
+			start();
+		}
+
+	},
 	//Game over
 	gamveOver:function(){
 
 	},
 	// All key event handlers
 	_keydownHandler:function(e){
-		
+
 		var matrix = this.matrix;
 
-		if(!e) { 
+		if(!e) {
 			var e = window.event;
 		}
 		if (this.isGameOver||!this.shape){
@@ -435,10 +448,10 @@ Tetris.prototype = {
 		switch(e.keyCode){
 			case 37:{this.shape.goLeft(matrix);this._draw();}
 			break;
-			
+
 			case 39:{this.shape.goRight(matrix);this._draw();}
 			break;
-			
+
 			case 38:{this.shape.rotate(matrix);this._draw();}
 			break;
 
@@ -458,6 +471,8 @@ Tetris.prototype = {
 	_initEvents:function(){
 		window.addEventListener('keydown',utils.proxy(this._keydownHandler,this),false);
 		views.btnRestart.addEventListener('click',utils.proxy(this._restartHandler,this),false);
+		views.NewRestart.addEventListener('click',utils.proxy(this._restartHandler,this),false);
+
 	},
 
 	// Fire a new random shape
@@ -467,10 +482,10 @@ Tetris.prototype = {
 		this._draw();
 		canvas.drawPreviewShape(this.preparedShape);
 	},
-	
+
 	// Draw game data
 	_draw:function(){
-		canvas.drawScene(); 
+		canvas.drawScene();
 		canvas.drawShape(this.shape);
 		canvas.drawMatrix(this.matrix);
 	},
@@ -486,7 +501,7 @@ Tetris.prototype = {
 			this._checkLevel();
 		}
 		if (!this.isGameOver){
-			window.requestAnimationFrame(utils.proxy(this._refresh,this));	
+			window.requestAnimationFrame(utils.proxy(this._refresh,this));
 		}
 	},
 	// Update game data
@@ -510,7 +525,7 @@ Tetris.prototype = {
 		var rows = checkFullRows(this.matrix);
 		if (rows.length){
 			removeRows(this.matrix,rows);
-			
+
 			var score = calcScore(rows);
 			var reward = calcRewards(rows);
 			this.score += score + reward;
@@ -546,7 +561,7 @@ var COLORS =  consts.COLORS;
 var COLUMN_COUNT = consts.COLUMN_COUNT;
 
 /**
-	Defined all shapes used in Tetris game. 
+	Defined all shapes used in Tetris game.
 	You can add more shapes if you wish.
 */
 
@@ -801,7 +816,7 @@ ShapeZR.prototype = {
 	canDown:function(matrix){
 		return isShapeCanMove(this,matrix,'down');
 	},
-	//Move the shape down 
+	//Move the shape down
 	goDown:function(matrix){
 		if (isShapeCanMove(this,matrix,'down')){
 			this.y+=1;
@@ -999,6 +1014,7 @@ var rewardInfo = $('rewardInfo');
 var reward = $('reward');
 var gameOver = $('gameOver');
 var btnRestart = $('restart');
+var NewRestart = $('restart_button');
 var finalScore = $('finalScore');
 
 
@@ -1065,6 +1081,7 @@ var tetrisView = {
 	  this.scene = scene;
 	  this.preview = preview;
 	  this.btnRestart = btnRestart;
+		this.NewRestart = NewRestart;
 	  layoutView(this.container,maxW,maxH);
 	  this.scene.focus();
 
@@ -1072,9 +1089,9 @@ var tetrisView = {
 		 rewardInfo.className = 'invisible';
 	  });
 	},
-	// Update the score 
+	// Update the score
 	setScore:function(scoreNumber){
-		score.innerHTML = scoreNumber;	
+		score.innerHTML = scoreNumber;
 	},
 	// Update the finnal score
 	setFinalScore:function(scoreNumber){
@@ -1088,7 +1105,7 @@ var tetrisView = {
 	setReward:function(rewardScore){
 		if (rewardScore>0){
 			reward.innerHTML = rewardScore;
-			rewardInfo.className = 'fadeOutUp animated';	
+			rewardInfo.className = 'fadeOutUp animated';
 		}else{
 			rewardInfo.className = 'invisible';
 		}
