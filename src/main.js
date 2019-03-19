@@ -84,6 +84,9 @@ var removeRows = function(matrix,rows){
 	Check game data to determin wether the  game is over
 */
 var checkGameOver = function(matrix){
+	if (matrix.length < 1 || matrix[0].length < 1){
+    	return false;
+	}
 	var firstRow = matrix[0];
 	for(var i = 0;i<firstRow.length;i++){
 		if (firstRow[i]!==0){
@@ -92,7 +95,6 @@ var checkGameOver = function(matrix){
 	}
 	return false;
 };
-
 
 /**
 	Calculate  the extra rewards add to the score
