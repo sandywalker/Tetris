@@ -15,7 +15,7 @@
 		<h1>Game Over !</h1>
 		<h3>Score: <span id="finalScore">0</span></h3>
 		<h2><a href="#" id="restart">Restart</a></h2>
-		
+
 	</div>
 	<div id="side">
 		<div id="info">
@@ -23,10 +23,42 @@
 			<h2 id="scoreInfo">Score: <br><span id="score" >0</span></h2>
 			<div id="rewardInfo" class="invisible">+<span id="reward">0</span></div>
 			<canvas id="preview"></canvas>
+			<input type="image" id="pause_button" src = "pause.png" alt="Pause Button" />
+			<input type="image" id="play_button" src = "PlayButton.png" alt="Play Button" />
+			<input type="image" id="restart_button" src="restart.png" alt="Restart Button" />
+			<h1 id="restartInfo"> Click above to restart game </h1>
+
 		</div>
+		<input type="image" id="info_button" src="./images/info.png" alt="info button" />
 	</div>
+
 </div>
 
+<div id="modal_backdrop" class="hidden"></div>
+<div id="info_modal" class="hidden">
+	<div class="info_dialog">
+		<button type="button" class="info_close_button">&times;</button>
+	  <div class="info_header">
+		 <h1>Information</h1>
+	  </div>
+
+	  <div class="info_controls_header">
+		 <h3>Controls</h3>
+		 <p>Rotate - <em>up</em> arrow, Move Left - <em>left</em> arrow, Move Right - <em>right</em> arrow,</p>
+		 <p>Move Down - <em>down</em> arrow, Fast Drop - <em>space key</em></p>
+	  </div>
+
+	  <div class="info_instructions_header">
+		 <h3>How To Play</h3>
+		 <p><em>Tetris</em> is a game wherein the goal is to completely fill rows of the grid with the falling shapes in order to accrue points.
+			 This causes the rows to be removed and all filled squares above that row to drop down one row. Each row is worth 100 base points and
+			 removing more rows increases the base points by 100 points per row removed plus a reward of: two to the power of number of rows removed
+			 minus one (i.e. three rows will get 300 base points and 400 reward points for a total of 700 points). Finally, the level speeds up the
+			 rate at which the shapes fall and increases by one every two minutes that the game is played.</p>
+	  </div>
+
+	</div>
+</div>
 
 </body>
 <script src="dist/tetris.js"></script>
